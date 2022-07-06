@@ -1,10 +1,13 @@
 #!/bin/bash
 
 ####define some colours for bash
+#release  0.8
+# changelog
+#-add default answers
 
 Color_Off='\033[0m'       # Text Reset
 # Regular Colors
-Black='\033[0;30m'        # Black
+
 Red='\033[0;31m'          # Red
 Green='\033[0;32m'        # Green
 Yellow='\033[0;33m'       # Yellow
@@ -19,9 +22,6 @@ BRed='\033[1;31m'         # Red
 BGreen='\033[1;32m'       # Green
 BYellow='\033[1;33m'      # Yellow
 BBlue='\033[1;34m'        # Blue
-BPurple='\033[1;35m'      # Purple
-BCyan='\033[1;36m'        # Cyan
-BWhite='\033[1;37m'       # White
 
 # Underline
 UBlack='\033[4;30m'       # Black
@@ -33,47 +33,11 @@ UPurple='\033[4;35m'      # Purple
 UCyan='\033[4;36m'        # Cyan
 UWhite='\033[4;37m'       # White
 
-# Background
-On_Black='\033[40m'       # Black
-On_Red='\033[41m'         # Red
-On_Green='\033[42m'       # Green
-On_Yellow='\033[43m'      # Yellow
-On_Blue='\033[44m'        # Blue
-On_Purple='\033[45m'      # Purple
-On_Cyan='\033[46m'        # Cyan
-On_White='\033[47m'       # White
-
 # High Intensity
-IBlack='\033[0;90m'       # Black
+
 IRed='\033[0;91m'         # Red
-IGreen='\033[0;92m'       # Green
 IYellow='\033[0;93m'      # Yellow
 IBlue='\033[0;94m'        # Blue
-IPurple='\033[0;95m'      # Purple
-ICyan='\033[0;96m'        # Cyan
-IWhite='\033[0;97m'       # White
-
-# Bold High Intensity
-BIBlack='\033[1;90m'      # Black
-BIRed='\033[1;91m'        # Red
-BIGreen='\033[1;92m'      # Green
-BIYellow='\033[1;93m'     # Yellow
-BIBlue='\033[1;94m'       # Blue
-BIPurple='\033[1;95m'     # Purple
-BICyan='\033[1;96m'       # Cyan
-BIWhite='\033[1;97m'      # White
-
-# High Intensity backgrounds
-On_IBlack='\033[0;100m'   # Black
-On_IRed='\033[0;101m'     # Red
-On_IGreen='\033[0;102m'   # Green
-On_IYellow='\033[0;103m'  # Yellow
-On_IBlue='\033[0;104m'    # Blue
-On_IPurple='\033[0;105m'  # Purple
-On_ICyan='\033[0;106m'    # Cyan
-On_IWhite='\033[0;107m'   # White
-###############################
-
 
 getting_username_function () {
 clear # clears the screen
@@ -102,7 +66,7 @@ echo -e " ${UPurple}Press 3 for exit${Color_Off} "
 echo ""
 
 while true; do
-    read -p "Choose an username to install sounds    (1/2/3) " username_answer
+    read -e -p "Choose an username to install sounds: " -i 1  username_answer
     case $username_answer in
         [1]* )
            echo -e "username ${UCyan} $username ${Color_Off} was choosen. will use it"
@@ -222,8 +186,12 @@ systemctl restart systemd-udevd
                                                              chmod +x /etc/sounds/notify.sh
 
 
+
                                        } # end of install_notifications condition
                     fi
+   echo ""
+   echo -e "Instalation Success. Plug in a USB device to test."
+   echo ""
  } # end of main function
 
 #########################################################################end of install function!########################################################################################
@@ -254,34 +222,53 @@ if (( $EUID != 0 )); then
     echo "Please run as root"
     exit
 fi
-#######check dependency
-echo "Checking dependencies"
+########################################check dependency########################################
 echo ""
-echo "We have root"
+echo "Sound Notification Dependencies"
 ##systemd
  if hash systemctl 2>/dev/null;
     then
-       echo ""
-        echo "Systemd is installled, will continue"
+    echo ""
+    echo -e "${BBlue} Systemd${Color_Off} is installled"
     else
-    echo "Systemd is NOT installled, will exit"
+    echo -e "${BRed} Systemd${Color_Off} is NOT installled, will exit"
     exit
     fi
 ########aplay
 if which aplay >/dev/null; then
 echo ""
-    echo "aplay is installed, will continue"
+    echo -e "${BBlue} Aplay${Color_Off} is installed"
 else
-    echo "aplay missing, please install dependency and run script again!"
+    echo -e "${BRed} Aplay${Color_Off} missing, please install dependency and run script again!"
 fi
+echo ""
+echo -e "Visual Notification Dependencies "
+echo ""
+if which notify-send >/dev/null || which kdialog >/dev/null  ; then
+{
+echo -e " ${BBlue}libnotify${Color_Off} or ${BBlue}kdialog${Color_Off} are installed"
+visuals=1
+default_answer=0
+}
+else
+{
+echo -e "${BRed}libnotify${Color_Off} or ${BBlue}kdialog${Color_Off}  are  not installed"
+default_answer=1
+visuals=0
+}
+fi
+echo ""
+
+
+####################################################################################
 echo                "########################################"
 echo ""
 echo ""
 echo "Choose one of the following options:"
 echo ""
-echo -e "${IYellow} 0-Install USB Event Sounds only ${Color_Off} "
+if [ "$visuals" == "1" ] ; then  echo -e "${IYellow} 0-Install USB Event Sounds and notifications (Beta) ${Color_Off} " ; fi
 echo ""
-echo  -e "${IBlue} 1-Install USB Event Sounds  and notifications (Beta) ${Color_Off}"
+echo  -e "${IBlue} 1-Install USB Event Sounds only ${Color_Off}"
 echo ""
 echo -e " ${IRed}2-Uninstall USB Event Sounds ${Color_Off} "
 echo ""
@@ -289,18 +276,16 @@ echo -e " ${UPurple}3-Exit${Color_Off} "
 echo ""
 
 while true; do
-    read -p "Choose an action!   (0/1/2/3) " answer
+    read -e -p "Choose an action: " -i $default_answer answer
      case $answer in
         [0]* )
-           echo  "Start Installation of Sounds only "
-           #install_function
-           install_notifications=0
+           echo  "Start Installation of Sounds and Notifications "
+           install_notifications=1
             getting_username_function
            break;;
         [1]* )
-           echo "Start Installation of Sounds and Notifications"
-           #install_function
-           install_notifications=1
+           echo "Start Installation of Sounds only"
+           install_notifications=0
             getting_username_function
            break;;
          [2]* )
