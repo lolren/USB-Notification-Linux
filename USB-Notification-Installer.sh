@@ -91,7 +91,7 @@ install_function #go to install function
 install_function () { ############################################### main install function###############################################
 clear
 echo ""
-echo "will now proceed installation!"
+echo "The Installation will now proceed"
 
 #####################################################################creating systemd services###############################
 
@@ -190,7 +190,7 @@ systemctl restart systemd-udevd
                                        } # end of install_notifications condition
                     fi
    echo ""
-   echo -e "Instalation Success. Plug in a USB device to test."
+   echo -e "Successful Installation. Plug in a USB device to test."
    echo ""
  } # end of main function
 
