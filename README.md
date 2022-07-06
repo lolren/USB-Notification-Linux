@@ -22,10 +22,10 @@ N'joy!
 
 ***Requirements ***
 
-This script require a system running **Systemd**
-**aplay** is also required for playing sounds
-**libnotify** or **libnotify-bin** if you want a notification when you insert/remove a USB device
-Other than that should be distro/release agnostic.
+This script require a system running **Systemd**.
+**aplay** is also required for playing sounds.
+Alao, use **libnotify** or **libnotify-bin** if you want a notification when you insert/remove a USB device and you don't use KDE.
+Other than that, this script should be distro/release agnostic.
 
 **If you want your own sound files, just replace the two .WAV files with your own**. 
 
