@@ -4,7 +4,9 @@
 #release  0.8
 # changelog
 #-add default answers
-use_names=1
+use_names="true"
+fix_dmesg_for_users="false"
+# setting this to "true" fill fix make "dmesg" command work without root. This is needed if you want usb names!
 
 Color_Off='\033[0m'       # Text Reset
 # Regular Colors
@@ -190,7 +192,7 @@ systemctl restart systemd-udevd
                                                             {
                                                             echo "#!/bin/bash"
                                                             echo 'export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/${UID}/bus}"'
-                                                                      if [ $use_names == "1" ] ; then
+                                                                      if [ $use_names == "true" ] ; then
                                                              {
                                                            printf 'product=$(dmesg | grep Product | tail -1  | grep -o "Product:.*" | awk -F Product:  '\''{print $2}'\'')\n'
                                                           if [ "$use_kdialog" == 1 ] ; then
@@ -309,7 +311,8 @@ while true; do
            echo  "Start Installation of Sounds and Notifications "
            install_notifications=1
             getting_username_function
-            grep -qF -- "$LINE" "$FILE" || echo  "$LINE"  >> "$FILE"
+            if [ "$fix_dmesg_for_users" == "true" ] ; then  grep -qF -- "$LINE" "$FILE" || echo  "$LINE"  >> "$FILE" ; fi
+
            break;;
         [1]* )
            echo "Start Installation of Sounds only"
