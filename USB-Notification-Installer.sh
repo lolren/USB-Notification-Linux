@@ -4,6 +4,7 @@
 #release  0.8
 # changelog
 #-add default answers
+use_names=1
 
 Color_Off='\033[0m'       # Text Reset
 # Regular Colors
@@ -44,12 +45,17 @@ clear # clears the screen
 user_numbers=$(ls /home | wc -l)
 
 #list users, will need to make it better here
-if [ $user_numbers" == "1 ] ; then
+if [ "$user_numbers" == "1" ] ; then
+
+
   echo "We only have a username inside home Directory"
   username=`ls /home`
+  echo -e "Using ${IRed}$username${Color_Off} as user!"
+  else {
+  echo "More than 1 username have been detected!"
+  }
 
-echo -e "Using ${IRed}$username${Color_Off} as user!"
-fi
+  fi
 echo ""
 echo "We need a username to install the systemd service"
 echo ""
@@ -58,7 +64,8 @@ echo ""
 echo "looking in /home for users"
 echo ""
 echo ""
-echo -e  "${UCyan} Press 1 to use ${IRed}$username${Color_Off} ${UCyan} username${Color_Off} "
+
+if [ "$user_numbers" == "1" ] ; then echo -e  "${UCyan} Press 1 to use ${IRed}$username${Color_Off} ${UCyan} username${Color_Off} " ; fi
 echo ""
 echo -e  "${UYellow} Press 2  to manually input username${Color_Off} "
 echo ""
@@ -66,7 +73,8 @@ echo -e " ${UPurple}Press 3 for exit${Color_Off} "
 echo ""
 
 while true; do
-    read -e -p "Choose an username to install sounds: " -i 1  username_answer
+if [ "$user_numbers" == "1" ] ; then read -e -p "Choose an username to install sounds: " -i 1  username_answer ; fi
+if [ "$user_numbers" != "1" ] ; then read -e -p "Choose an username to install sounds: " -i 2  username_answer ; fi
     case $username_answer in
         [1]* )
            echo -e "username ${UCyan} $username ${Color_Off} was choosen. will use it"
@@ -158,11 +166,13 @@ systemctl restart systemd-udevd
 
 
                                                                                                         if which notify-send >/dev/null; then
+                                                                                                        {
                                                                                                                               echo ""
                                                                                                          echo -e "${BBlue}libnotify ${Color_Off}is installed. Will use ${BBlue} libnotify!${Color_Off} "
                                                                                                            use_kdialog=0
                                                                                                            use_libnotify=1;
-                                                                                                           elif which kdialog >/dev/null; then
+
+}                                                                                                           elif which kdialog >/dev/null; then
                                                                                                            {
  echo -e "${BBlue}kdialog ${Color_Off} is installed, will use ${BBlue} KDE ${Color_Off}notification SUBSYSTEM"
                                                                                                                                  use_kdialog=1
@@ -180,8 +190,21 @@ systemctl restart systemd-udevd
                                                             {
                                                             echo "#!/bin/bash"
                                                             echo 'export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/${UID}/bus}"'
+                                                                      if [ $use_names == "1" ] ; then
+                                                             {
+                                                           printf 'product=$(dmesg | grep Product | tail -1  | grep -o "Product:.*" | awk -F Product:  '\''{print $2}'\'')\n'
+                                                          if [ "$use_kdialog" == 1 ] ; then
+                                                          {
+                                                          echo 'kdialog --passivepopup " $product $1" 2'
+                                                          } ; fi
+                                                            if [ "$use_libnotify" == "1" ]  ; then
+                                                            {
+                                                            echo 'notify-send -t 2000 " $product $1" '
+                                                            } ;  fi
+                                                                   } else {
                                                             if [ $use_kdialog == "1" ] ; then  echo 'kdialog --passivepopup "USB Device $1" 2' ; fi
                                                             if [ $use_libnotify == "1" ] ; then  echo 'notify-send -t 2000 "USB Device $1" ' ; fi
+                                                                           } fi
                                                              } > /etc/sounds/notify.sh
                                                              chmod +x /etc/sounds/notify.sh
 
@@ -275,6 +298,10 @@ echo ""
 echo -e " ${UPurple}3-Exit${Color_Off} "
 echo ""
 
+LINE="kernel.dmesg_restrict = 0"
+FILE="/etc/sysctl.d/10-local.conf"
+
+
 while true; do
     read -e -p "Choose an action: " -i $default_answer answer
      case $answer in
@@ -282,6 +309,7 @@ while true; do
            echo  "Start Installation of Sounds and Notifications "
            install_notifications=1
             getting_username_function
+            grep -qF -- "$LINE" "$FILE" || echo  "$LINE"  >> "$FILE"
            break;;
         [1]* )
            echo "Start Installation of Sounds only"
