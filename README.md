@@ -17,6 +17,8 @@ The git way:
 
 `sudo ./USB-Notification-Installer.sh`
 
+If you want to get devices names, ensure the dmesg command works without sudo. if it doesn't, set fix_dmesg_for_users="false" to fix_dmesg_for_users="true" 
+
 Then Follow the Menu!
 N'joy!
 
