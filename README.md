@@ -10,8 +10,10 @@ So, in the end, I have deciced to make it myself.
 
 Now the script support USB names!
 This is very handy!.
-Be sure your distro supoorts dmesg without root acces ( without sudo). If not, edit the script and 
+Be sure your distro supoorts dmesg without root acces ( without sudo). If not, edit the script and set
 
+use_names="true"
+fix_dmesg_for_users="true"
 
 
 
