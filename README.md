@@ -3,6 +3,18 @@ I cannot believe that desktop enviroments don't put much accent to this. Having 
 I have proposed this to the KDE devs ( Desktop Enviroment of my choice) many times!
 So, in the end, I have deciced to make it myself. 
 
+
+
+
+**NEW!!!!**
+
+Now the script support USB names!
+This is very handy!.
+Be sure your distro supoorts dmesg without root acces ( without sudo). If not, edit the script and 
+
+
+
+
 **How to install**
 
 Download the content of this repository with either git or a manual download.
