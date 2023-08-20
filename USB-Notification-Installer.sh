@@ -114,6 +114,8 @@ fi
 
 cp USB-Remove.wav /etc/sounds/USB-Remove.wav
 cp USB-Insert.wav /etc/sounds/USB-Insert.wav
+###copy icon as well
+cp usb2.png /etc/sounds/usb2.png
 
 touch /etc/systemd/system/usb-insert.service
 touch /etc/systemd/system/usb-remove.service
@@ -195,17 +197,18 @@ systemctl restart systemd-udevd
                                                                       if [ $use_names == "true" ] ; then
                                                              {
                                                            printf 'product=$(dmesg | grep Product | tail -1  | grep -o "Product:.*" | awk -F Product:  '\''{print $2}'\'')\n'
+                                                           printf 'serial=$(dmesg | tail -n 4 | grep "tty" | tail -n 1 | grep -o '\''\\w*tty\\w*'\'' | tail -n 1)\n'
                                                           if [ "$use_kdialog" == 1 ] ; then
                                                           {
                                                           echo 'kdialog --passivepopup " $product $1" 2'
                                                           } ; fi
                                                             if [ "$use_libnotify" == "1" ]  ; then
                                                             {
-                                                            echo 'notify-send -t 2000 " $product $1" '
+                                                            echo 'notify-send -t 2000 " $product $1" "$serial" --app-name "USB-Notify" --icon "/etc/sounds/usb2.png" '
                                                             } ;  fi
                                                                    } else {
                                                             if [ $use_kdialog == "1" ] ; then  echo 'kdialog --passivepopup "USB Device $1" 2' ; fi
-                                                            if [ $use_libnotify == "1" ] ; then  echo 'notify-send -t 2000 "USB Device $1" ' ; fi
+                                                            if [ $use_libnotify == "1" ] ; then  echo 'notify-send -t 2000 " $product $1" "$serial" --app-name "USB-Notify" --icon "/etc/sounds/usb2.png" ' ; fi
                                                                            } fi
                                                              } > /etc/sounds/notify.sh
                                                              chmod +x /etc/sounds/notify.sh
