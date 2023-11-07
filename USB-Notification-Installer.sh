@@ -129,7 +129,7 @@ echo "User="$username""
 echo 'Type=oneshot'
 echo 'Environment="XDG_RUNTIME_DIR=/run/user/1000"'
 if [ "$install_notifications" == "1" ] ; then echo 'ExecStartPre=/bin/bash /etc/sounds/notify.sh Connected' ; fi
-echo 'ExecStart=/usr/bin/aplay /etc/sounds/USB-Insert.wav'
+echo 'ExecStart=-/usr/bin/aplay /etc/sounds/USB-Insert.wav'
 echo "Environment="DISPLAY=:0" "XAUTHORITY=/home/"$username"/.Xauthority""
 } > /etc/systemd/system/usb-insert.service
 
@@ -143,7 +143,7 @@ echo "User="$username""
 echo 'Type=oneshot'
 echo 'Environment="XDG_RUNTIME_DIR=/run/user/1000"'
 if [ "$install_notifications" == "1" ] ; then echo 'ExecStartPre=/bin/bash /etc/sounds/notify.sh Disconnected' ; fi
-echo 'ExecStart=/usr/bin/aplay /etc/sounds/USB-Remove.wav'
+echo 'ExecStart=-/usr/bin/aplay /etc/sounds/USB-Remove.wav'
 if [ "$install_notifications" == "1" ] ; then echo "Environment="DISPLAY=:0" "XAUTHORITY=/home/"$username"/.Xauthority"" ; fi
 } > /etc/systemd/system/usb-remove.service
 
